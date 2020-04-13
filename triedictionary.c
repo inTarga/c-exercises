@@ -22,7 +22,7 @@ char* lookup(struct trieNode* root, char* word) {
     struct trieNode* currNode = root;
 
     for(int i = 0; i < strlen(word); i++) {
-        struct trieNode* nextNode = currNode->children[word[i]];
+        struct trieNode* nextNode = currNode->children[word[i] - 'a'];
         if(!nextNode)
             return "no definition found";
         currNode = nextNode;
@@ -37,7 +37,7 @@ void insert(struct trieNode* root, char* word, char* definition) {
     struct trieNode* currNode = root;
 
     for(int i = 0; i < strlen(word); i++) {
-        struct trieNode* nextNode = currNode->children[word[i]];
+        struct trieNode* nextNode = currNode->children[word[i] - 'a'];
         if(!nextNode)
             nextNode = getNode();
         currNode = nextNode;
@@ -53,7 +53,7 @@ void delete(struct trieNode* root, char* word) {
     nodes[0] = root;
 
     for(int i = 0; i < wordLen; i++) {
-        nodes[i+1] = nodes[i]->children[word[i]];
+        nodes[i+1] = nodes[i]->children[word[i] - 'a'];
         if(!nodes[i+1])
             break;
     }
