@@ -24,8 +24,6 @@ char* sortString(char inString[]) {
             k++;
         }
     }
-    //terminate the string.
-    outString[strLength] = '\0';
 
     return outString;
 }
