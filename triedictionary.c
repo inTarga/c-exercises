@@ -112,28 +112,28 @@ int main() {
 
     while(true) {
         printf("Please input one of the following commands:\n  insert, lookup, delete, quit.\n>");
-        scanf("%s", command);
+        scanf("%7s", command);
 
         if(!strcmp(command, "insert")) {
             printf("\nInput a word to insert.\n>");
-            scanf("%s", word);
+            scanf("%20s", word);
             //check validity of word?
 
             printf("\nInput a definition for this word.\n>");
-            scanf("%s", definition);
+            scanf("%20s", definition);
 
             insert(root, word, definition);
 
             printf("\nInsert complete!\n\n");
         } else if (!strcmp(command, "lookup")) {
             printf("\nInput a word to lookup.\n>");
-            scanf("%s", word);
+            scanf("%20s", word);
             printf("\nLooking up %s...\n", word);
 
             printf("\n%s - %s\n\n", word, lookup(root, word));
         } else if (!strcmp(command, "delete")) {
             printf("\nInput a word to delete.\n>");
-            scanf("%s", word);
+            scanf("%20s", word);
 
             delete(root, word);
 
