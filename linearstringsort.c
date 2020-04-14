@@ -4,7 +4,7 @@
 
 //takes a string, and returns a lexically sorted copy in O(n) time.
 char* sortString(char inString[]) {
-    int strLength = strlen(inString);
+    size_t strLength = strlen(inString);
     //setting up an int array to store the number of appearances of each character in the string.
     int charCounts[256] = {0};
 

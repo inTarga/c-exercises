@@ -59,7 +59,7 @@ void insert(struct trieNode* root, char* word, char* definition) {
 
 //deletes the definition of a word from a trie, and clean up the nodes this obsolesces.
 void delete(struct trieNode* root, char* word) {
-    int wordLen = strlen(word);
+    size_t wordLen = strlen(word);
     //create an array to hold pointers to the trie nodes that make up the path to where the definition is found.
     struct trieNode** nodes = malloc((wordLen+1)*sizeof(struct trieNode*));
     //the first node in this array is obviously the root.
