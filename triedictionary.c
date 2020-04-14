@@ -52,9 +52,10 @@ void insert(struct trieNode* root, char* word, char* definition) {
     }
 
     //if the definition doesn't already exist, allocate memory for it, and point to it.
-    if(!currNode->definition)
+    if(!currNode->definition) {
         currNode->definition = malloc(strlen(definition) + 1);
         strcpy(currNode->definition, definition);
+    }
 }
 
 //deletes the definition of a word from a trie, and clean up the nodes this obsolesces.
