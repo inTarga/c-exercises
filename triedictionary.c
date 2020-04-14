@@ -69,9 +69,11 @@ void delete(struct trieNode* root, char* word) {
     //walking the trie to reach the node that will contain the definition, while placing nodes into the path array.
     for(int i = 0; i < wordLen; i++) {
         nodes[i+1] = nodes[i]->children[word[i] - 'a'];
-        if(!nodes[i+1])
+        if(!nodes[i+1]) {
             //if the path is incomplete return early, as the definiton can't exist.
+            free(nodes);
             return;
+        }
     }
 
     //for the last node, check if it has any children
@@ -81,6 +83,7 @@ void delete(struct trieNode* root, char* word) {
             free(nodes[wordLen]->definition);
             nodes[wordLen]->definition = NULL;
             //then return early as the path must remain.
+            free(nodes);
             return;
         }
     }
@@ -101,6 +104,8 @@ void delete(struct trieNode* root, char* word) {
             free(nodes[i]);
         }
     }
+
+    free(nodes);
 }
 
 int main() {
