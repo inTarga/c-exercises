@@ -7,6 +7,7 @@
 struct trieNode {
     struct trieNode *children[26];
     char *definition;
+    int childCount;
 };
 
 //allocates memory for a trie node and nulls the field pointers. Returns a pointer to that memory.
@@ -39,9 +40,10 @@ char *lookup(struct trieNode *root, char *word) {
     return "no definition found";
 }
 
-//inserts a definition for a word into a trie, if it does not already exist.
+//inserts a definition for a word into a trie.
 void insert(struct trieNode *root, char *word, char *definition) {
     struct trieNode *currNode = root;
+    currNode->childCount++;
 
     //walking the trie to reach the node that will contain the definition.
     for (int i = 0; i < strlen(word); i++) {
@@ -49,62 +51,46 @@ void insert(struct trieNode *root, char *word, char *definition) {
             //create new nodes if the path is incomplete.
             currNode->children[word[i] - 'a'] = getNode();
         currNode = currNode->children[word[i] - 'a'];
+        currNode->childCount++;
     }
 
-    //if the definition doesn't already exist, allocate memory for it, and point to it.
-    if (!currNode->definition) {
-        currNode->definition = malloc(strlen(definition) + 1);
-        strcpy(currNode->definition, definition);
-    }
+    //free any existing definition, allocate memory for the new one it, and point to it.
+    if (currNode->definition)
+        free(currNode->definition);
+    currNode->definition = malloc(strlen(definition) + 1);
+    strcpy(currNode->definition, definition);
 }
 
 //deletes the definition of a word from a trie, and clean up the nodes this obsolesces.
-void delete(struct trieNode* root, char *word) {
-    size_t wordLen = strlen(word);
-    //create an array to hold pointers to the trie nodes that make up the path to where the definition is found.
-    struct trieNode **nodes = malloc((wordLen+1)*sizeof(struct trieNode*));
-    //the first node in this array is obviously the root.
-    nodes[0] = root;
+void delete(struct trieNode *root, char *word) {
+    //first check that the definition actually exists...
+    if (!strcmp(lookup(root, word), "no definition found"))
+        return;
 
-    //walking the trie to reach the node that will contain the definition, while placing nodes into the path array.
-    for (int i = 0; i < wordLen; i++) {
-        nodes[i+1] = nodes[i]->children[word[i] - 'a'];
-        if (!nodes[i+1]) {
-            //if the path is incomplete return early, as the definiton can't exist.
-            free(nodes);
-            return;
-        }
+    //walk the trie.
+    struct trieNode *currNode = root;
+    struct trieNode *nextNode;
+    for (int i = 0; i < strlen(word); i++) {
+        nextNode = currNode->children[word[i] - 'a'];
+        //decrement childCount since we're going to be removing a child.
+        currNode->childCount--;
+
+        //if the next node will have no children, null the pointer to it.
+        if (nextNode->childCount == 1)
+            currNode->children[word[i] - 'a'] = NULL;
+
+        //if this node has no children and isn't the root, free it.
+        if (currNode->childCount == 0 && i != 0)
+            free(currNode);
+
+        currNode = nextNode;
     }
 
-    //for the last node, check if it has any children
-    for (int i = 0; i < 26; i++) {
-        if (nodes[wordLen]->children[i]) {
-            //if it has, just delete the definition and null the pointer to it.
-            free(nodes[wordLen]->definition);
-            nodes[wordLen]->definition = NULL;
-            //then return early as the path must remain.
-            free(nodes);
-            return;
-        }
-    }
-
-    //delete the definition and null the pointer to it.
-    free(nodes[wordLen]->definition);
-    free(nodes[wordLen]);
-
-    //walk the path in reverse, cleaning up the nodes until we hit one that has a definition, or is the root.
-    for (int i = wordLen - 1; i >= 0; i--) {
-        if (nodes[i]->definition){
-            nodes[i]->children[word[i] - 'a'] = NULL;
-            break;
-        }
-        if (i == 0)
-            nodes[i]->children[word[i] - 'a'] = NULL;
-        else
-            free(nodes[i]);
-    }
-
-    free(nodes);
+    //clean up the final node.
+    free(currNode->definition);
+    currNode->definition = NULL;
+    if (currNode->childCount == 0)
+        free(currNode);
 }
 
 int main() {
